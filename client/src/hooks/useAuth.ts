@@ -1,6 +1,7 @@
 import { useQuery, useMutation, UseMutationResult } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 // Type definitions
 export interface User {
@@ -27,6 +28,7 @@ export interface RegisterCredentials {
 // Auth hook
 export function useAuth() {
   const { toast } = useToast();
+  const [_, navigate] = useLocation();
 
   // Fetch current user data
   const {
@@ -66,6 +68,8 @@ export function useAuth() {
         title: 'Login successful',
         description: `Welcome back, ${data.fullName}!`,
       });
+      // Redirect to home page
+      navigate('/');
     },
     onError: (error: Error) => {
       toast({
@@ -92,6 +96,8 @@ export function useAuth() {
         title: 'Registration successful',
         description: `Welcome, ${data.fullName}!`,
       });
+      // Redirect to home page
+      navigate('/');
     },
     onError: (error: Error) => {
       toast({

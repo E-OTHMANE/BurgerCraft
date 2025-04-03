@@ -41,7 +41,7 @@ export default function AuthPage() {
   // Redirect if user is already authenticated
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/build");
     }
   }, [user, navigate]);
 

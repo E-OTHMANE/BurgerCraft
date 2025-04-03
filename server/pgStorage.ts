@@ -4,209 +4,210 @@ import { burgers, ingredients, type Burger, type InsertBurger, type Ingredient, 
 import { IStorage } from './storage';
 import { log } from './vite';
 
+// Maximum number of retries for database operations
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+// Helper function to retry database operations
+async function withRetry<T>(operation: () => Promise<T>, operationName: string): Promise<T> {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const isLastAttempt = attempt === MAX_RETRIES;
+      
+      if (!isLastAttempt) {
+        log(`Retrying ${operationName} after failure (attempt ${attempt}/${MAX_RETRIES}): ${(error as Error).message}`, 'postgres');
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      }
+    }
+  }
+  
+  // If we got here, all retries failed
+  log(`All ${MAX_RETRIES} attempts for ${operationName} failed: ${(lastError as Error).message}`, 'postgres');
+  throw lastError;
+}
+
 export class PgStorage implements IStorage {
   // Ingredient operations
   async getAllIngredients(): Promise<Ingredient[]> {
-    try {
+    return withRetry(async () => {
       return await db.select().from(ingredients);
-    } catch (error) {
-      log(`Error getting all ingredients: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, 'getAllIngredients');
   }
 
   async getIngredientsByType(type: string): Promise<Ingredient[]> {
-    try {
+    return withRetry(async () => {
       return await db.select().from(ingredients).where(eq(ingredients.type, type));
-    } catch (error) {
-      log(`Error getting ingredients by type: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, 'getIngredientsByType');
   }
 
   async getIngredient(id: number): Promise<Ingredient | undefined> {
-    try {
+    return withRetry(async () => {
       const result = await db.select().from(ingredients).where(eq(ingredients.id, id));
       return result[0];
-    } catch (error) {
-      log(`Error getting ingredient ${id}: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, `getIngredient(${id})`);
   }
 
   async createIngredient(insertIngredient: InsertIngredient): Promise<Ingredient> {
-    try {
+    return withRetry(async () => {
       const result = await db.insert(ingredients).values(insertIngredient).returning();
       return result[0];
-    } catch (error) {
-      log(`Error creating ingredient: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, 'createIngredient');
   }
 
   // Burger operations
   async getAllBurgers(): Promise<Burger[]> {
-    try {
+    return withRetry(async () => {
       return await db.select().from(burgers);
-    } catch (error) {
-      log(`Error getting all burgers: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, 'getAllBurgers');
   }
 
   async getBurger(id: number): Promise<Burger | undefined> {
-    try {
+    return withRetry(async () => {
       const result = await db.select().from(burgers).where(eq(burgers.id, id));
       return result[0];
-    } catch (error) {
-      log(`Error getting burger ${id}: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, `getBurger(${id})`);
   }
 
   async createBurger(insertBurger: InsertBurger): Promise<Burger> {
-    try {
+    return withRetry(async () => {
       const result = await db.insert(burgers).values(insertBurger).returning();
       return result[0];
-    } catch (error) {
-      log(`Error creating burger: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+    }, 'createBurger');
   }
 
   // Initialize the database with default ingredients if none exist
   async initializeWithDefaultIngredientsIfNeeded() {
-    try {
+    return withRetry(async () => {
       // Check if ingredients already exist
       const existingIngredients = await this.getAllIngredients();
       
       if (existingIngredients.length === 0) {
         log('No ingredients found in database. Adding default ingredients...', 'postgres');
         
-        // Buns
-        await this.createIngredient({
-          name: "classic-bun",
-          displayName: "Classic Bun",
-          type: "bun",
-          color: "bg-bun",
-          height: 12
-        });
+        // Create a batch of promises for all ingredient creation operations
+        const defaultIngredients: InsertIngredient[] = [
+          // Buns
+          {
+            name: "classic-bun",
+            displayName: "Classic Bun",
+            type: "bun",
+            color: "bg-bun",
+            height: 12
+          },
+          {
+            name: "sesame-bun",
+            displayName: "Sesame Bun",
+            type: "bun",
+            color: "bg-bun",
+            height: 12
+          },
+          // Patties
+          {
+            name: "beef-patty",
+            displayName: "Beef Patty",
+            type: "patty",
+            color: "bg-meat",
+            height: 8
+          },
+          {
+            name: "veggie-patty",
+            displayName: "Veggie Patty",
+            type: "patty",
+            color: "bg-lettuce",
+            height: 8
+          },
+          // Cheese
+          {
+            name: "cheddar",
+            displayName: "Cheddar",
+            type: "cheese",
+            color: "bg-cheese",
+            height: 4
+          },
+          {
+            name: "swiss",
+            displayName: "Swiss",
+            type: "cheese",
+            color: "bg-yellow-100",
+            height: 4
+          },
+          // Veggies
+          {
+            name: "lettuce",
+            displayName: "Lettuce",
+            type: "veggie",
+            color: "bg-lettuce",
+            height: 4
+          },
+          {
+            name: "tomato",
+            displayName: "Tomato",
+            type: "veggie",
+            color: "bg-tomato",
+            height: 4
+          },
+          {
+            name: "onion",
+            displayName: "Onion",
+            type: "veggie",
+            color: "bg-onion",
+            height: 4
+          },
+          {
+            name: "pickle",
+            displayName: "Pickle",
+            type: "veggie",
+            color: "bg-green-300",
+            height: 4
+          },
+          // Sauces
+          {
+            name: "ketchup",
+            displayName: "Ketchup",
+            type: "sauce",
+            color: "bg-red-500",
+            height: 2
+          },
+          {
+            name: "mayo",
+            displayName: "Mayo",
+            type: "sauce",
+            color: "bg-gray-100",
+            height: 2
+          },
+          {
+            name: "mustard",
+            displayName: "Mustard",
+            type: "sauce",
+            color: "bg-yellow-400",
+            height: 2
+          },
+          {
+            name: "special-sauce",
+            displayName: "Special Sauce",
+            type: "sauce",
+            color: "bg-orange-300",
+            height: 2
+          }
+        ];
         
-        await this.createIngredient({
-          name: "sesame-bun",
-          displayName: "Sesame Bun",
-          type: "bun",
-          color: "bg-bun",
-          height: 12
-        });
-        
-        // Patties
-        await this.createIngredient({
-          name: "beef-patty",
-          displayName: "Beef Patty",
-          type: "patty",
-          color: "bg-meat",
-          height: 8
-        });
-        
-        await this.createIngredient({
-          name: "veggie-patty",
-          displayName: "Veggie Patty",
-          type: "patty",
-          color: "bg-lettuce",
-          height: 8
-        });
-        
-        // Cheese
-        await this.createIngredient({
-          name: "cheddar",
-          displayName: "Cheddar",
-          type: "cheese",
-          color: "bg-cheese",
-          height: 4
-        });
-        
-        await this.createIngredient({
-          name: "swiss",
-          displayName: "Swiss",
-          type: "cheese",
-          color: "bg-yellow-100",
-          height: 4
-        });
-        
-        // Veggies
-        await this.createIngredient({
-          name: "lettuce",
-          displayName: "Lettuce",
-          type: "veggie",
-          color: "bg-lettuce",
-          height: 4
-        });
-        
-        await this.createIngredient({
-          name: "tomato",
-          displayName: "Tomato",
-          type: "veggie",
-          color: "bg-tomato",
-          height: 4
-        });
-        
-        await this.createIngredient({
-          name: "onion",
-          displayName: "Onion",
-          type: "veggie",
-          color: "bg-onion",
-          height: 4
-        });
-        
-        await this.createIngredient({
-          name: "pickle",
-          displayName: "Pickle",
-          type: "veggie",
-          color: "bg-green-300",
-          height: 4
-        });
-        
-        // Sauces
-        await this.createIngredient({
-          name: "ketchup",
-          displayName: "Ketchup",
-          type: "sauce",
-          color: "bg-red-500",
-          height: 2
-        });
-        
-        await this.createIngredient({
-          name: "mayo",
-          displayName: "Mayo",
-          type: "sauce",
-          color: "bg-gray-100",
-          height: 2
-        });
-        
-        await this.createIngredient({
-          name: "mustard",
-          displayName: "Mustard",
-          type: "sauce",
-          color: "bg-yellow-400",
-          height: 2
-        });
-        
-        await this.createIngredient({
-          name: "special-sauce",
-          displayName: "Special Sauce",
-          type: "sauce",
-          color: "bg-orange-300",
-          height: 2
-        });
+        // Create ingredients sequentially to avoid overwhelming the database
+        for (const ingredient of defaultIngredients) {
+          await this.createIngredient(ingredient);
+        }
         
         log('Default ingredients added successfully', 'postgres');
       } else {
         log(`Database already contains ${existingIngredients.length} ingredients`, 'postgres');
       }
-    } catch (error) {
-      log(`Error initializing default ingredients: ${(error as Error).message}`, 'postgres');
-      throw error;
-    }
+      
+      return true;
+    }, 'initializeWithDefaultIngredientsIfNeeded');
   }
 }

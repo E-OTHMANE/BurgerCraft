@@ -4,11 +4,39 @@ import { setupVite, serveStatic, log } from "./vite";
 import { runMigrations } from "./db";
 import { PgStorage } from "./pgStorage";
 import { storage } from "./storage";
+import { Server } from 'http';
 
 // Create and set the PostgreSQL storage implementation
 const pgStorage = new PgStorage();
 // Replace the default storage with our PostgreSQL implementation
 Object.assign(storage, pgStorage);
+
+// Store server instance so we can close it properly during shutdown
+let serverInstance: Server | null = null;
+
+// Handle graceful shutdown
+const handleShutdown = () => {
+  log('Received shutdown signal, closing server and database connections...', 'server');
+  
+  if (serverInstance) {
+    serverInstance.close(() => {
+      log('Server closed successfully', 'server');
+      process.exit(0);
+    });
+    
+    // Force close after 10 seconds if graceful shutdown fails
+    setTimeout(() => {
+      log('Forcing shutdown after timeout', 'server');
+      process.exit(1);
+    }, 10000);
+  } else {
+    process.exit(0);
+  }
+};
+
+// Register shutdown handlers
+process.on('SIGTERM', handleShutdown);
+process.on('SIGINT', handleShutdown);
 
 const app = express();
 app.use(express.json());
@@ -83,7 +111,7 @@ app.use((req, res, next) => {
     // this serves both the API and the client.
     // It is the only port that is not firewalled.
     const port = 5000;
-    server.listen({
+    serverInstance = server.listen({
       port,
       host: "0.0.0.0",
       reusePort: true,

@@ -4,8 +4,11 @@ import { storage } from "./storage";
 import { insertBurgerSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication routes and middleware
+  setupAuth(app);
   // Get all ingredients
   app.get("/api/ingredients", async (req, res) => {
     try {

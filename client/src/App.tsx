@@ -2,24 +2,21 @@ import { Switch, Route } from "wouter";
 import WelcomePage from "@/pages/WelcomePage";
 import BuilderPage from "@/pages/BuilderPage";
 import FinalPage from "@/pages/FinalPage";
+import AuthPage from "@/pages/AuthPage";
 import NotFound from "@/pages/not-found";
+import { ProtectedRoute } from "@/lib/protected-route";
 import { BurgerProvider } from "@/context/BurgerContext";
 
-// Define routes using route descriptors instead of component prop
-// We already have a BurgerProvider in main.tsx, but to fix the context issue
-// we're adding a second layer here to ensure our route components can access it
+// Define routes with authentication
 function RouterWithProviders() {
   return (
     <BurgerProvider>
       <Switch>
-        <Route path="/">
-          {() => <WelcomePage />}
-        </Route>
-        <Route path="/build">
-          {() => <BuilderPage />}
-        </Route>
-        <Route path="/final">
-          {() => <FinalPage />}
+        <ProtectedRoute path="/" component={WelcomePage} />
+        <ProtectedRoute path="/build" component={BuilderPage} />
+        <ProtectedRoute path="/final" component={FinalPage} />
+        <Route path="/auth">
+          {() => <AuthPage />}
         </Route>
         <Route>
           {() => <NotFound />}

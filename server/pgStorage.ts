@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from './db';
-import { burgers, ingredients, type Burger, type InsertBurger, type Ingredient, type InsertIngredient } from '@shared/schema';
+import { burgers, ingredients, users, type Burger, type InsertBurger, type Ingredient, type InsertIngredient, type User, type InsertUser } from '@shared/schema';
 import { IStorage } from './storage';
 import { log } from './vite';
 
@@ -79,6 +79,40 @@ export class PgStorage implements IStorage {
       const result = await db.insert(burgers).values(insertBurger).returning();
       return result[0];
     }, 'createBurger');
+  }
+
+  async getBurgersByUserId(userId: number): Promise<Burger[]> {
+    return withRetry(async () => {
+      return await db.select().from(burgers).where(eq(burgers.userId, userId));
+    }, `getBurgersByUserId(${userId})`);
+  }
+
+  // User operations
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return withRetry(async () => {
+      const result = await db.select().from(users).where(eq(users.email, email));
+      return result[0];
+    }, `getUserByEmail(${email})`);
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    return withRetry(async () => {
+      const result = await db.insert(users).values(insertUser).returning();
+      return result[0];
+    }, 'createUser');
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    return withRetry(async () => {
+      const result = await db.select().from(users).where(eq(users.id, id));
+      return result[0];
+    }, `getUser(${id})`);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return withRetry(async () => {
+      return await db.select().from(users);
+    }, 'getAllUsers');
   }
 
   // Initialize the database with default ingredients if none exist

@@ -1,4 +1,4 @@
-import { burgers, ingredients, type Burger, type InsertBurger, type Ingredient, type InsertIngredient } from "@shared/schema";
+import { burgers, ingredients, users, type Burger, type InsertBurger, type Ingredient, type InsertIngredient, type User, type InsertUser } from "@shared/schema";
 import { log } from './vite';
 
 export interface IStorage {
@@ -10,21 +10,32 @@ export interface IStorage {
   
   // Burger operations
   getAllBurgers(): Promise<Burger[]>;
+  getBurgersByUserId(userId: number): Promise<Burger[]>;
   getBurger(id: number): Promise<Burger | undefined>;
   createBurger(burger: InsertBurger): Promise<Burger>;
+
+  // User operations
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  getUser(id: number): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
 }
 
 export class MemStorage implements IStorage {
   private ingredients: Map<number, Ingredient>;
   private burgers: Map<number, Burger>;
+  private users: Map<number, User>;
   private ingredientId: number;
   private burgerId: number;
+  private userId: number;
 
   constructor() {
     this.ingredients = new Map();
     this.burgers = new Map();
+    this.users = new Map();
     this.ingredientId = 1;
     this.burgerId = 1;
+    this.userId = 1;
     
     // Initialize with default ingredients
     this.initializeIngredients();
@@ -183,9 +194,47 @@ export class MemStorage implements IStorage {
 
   async createBurger(insertBurger: InsertBurger): Promise<Burger> {
     const id = this.burgerId++;
-    const burger: Burger = { ...insertBurger, id };
+    const burger: Burger = { 
+      ...insertBurger, 
+      id,
+      userId: insertBurger.userId || null, // Ensure userId is never undefined
+      createdAt: new Date() 
+    };
     this.burgers.set(id, burger);
     return burger;
+  }
+
+  async getBurgersByUserId(userId: number): Promise<Burger[]> {
+    return Array.from(this.burgers.values()).filter(
+      (burger) => burger.userId === userId
+    );
+  }
+
+  // User methods
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email
+    );
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.userId++;
+    const user: User = {
+      ...insertUser,
+      id,
+      age: insertUser.age || null, // Ensure age is never undefined
+      createdAt: new Date()
+    };
+    this.users.set(id, user);
+    return user;
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
   }
 }
 

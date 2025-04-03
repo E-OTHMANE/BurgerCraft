@@ -1,91 +1,106 @@
-# BurgerFy - Custom Burger Builder App
+# BurgerCreativity
 
-BurgerFy is a responsive web application that allows users to create and customize their own burgers by selecting different ingredients from various categories.
+BurgerCreativity is a dynamic and interactive burger customization platform that empowers users to create personalized burger experiences.
 
-## Features
+![BurgerCreativity App](docs/app-screenshot.png)
 
-- Interactive burger builder with real-time preview
-- Multiple ingredient categories (buns, patties, cheeses, veggies, sauces)
-- Visual representation of your burger as you build it
-- Ability to name and save your custom burger creation
-- Responsive design for mobile, tablet, and desktop
+## 🍔 Features
 
-## How to Run the Application
+- **Interactive Builder**: Design your own burger with our intuitive drag-and-drop interface
+- **Ingredient Variety**: Choose from a wide selection of buns, patties, cheeses, veggies, and sauces
+- **Visual Preview**: See your creation come to life in real-time as you build
+- **Save Your Creations**: Name and save your custom burger recipes
 
-### Prerequisites
+## 🚀 Tech Stack
 
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- npm or yarn package manager
-- PostgreSQL database
+- **Frontend**: React, TypeScript, Shadcn UI
+- **State Management**: React Context API, React Query
+- **Styling**: Tailwind CSS
+- **Backend**: Express.js
+- **Database**: PostgreSQL with Drizzle ORM
+- **Package Manager**: npm
 
-### Setup Instructions
+## 📋 Prerequisites
 
-1. **Clone the repository**
+Before you begin, ensure you have the following installed:
+- Node.js (v16.x or later)
+- npm (v8.x or later)
+- PostgreSQL (v14.x or later)
+
+## 🛠️ Installation
+
+1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd burgerfy
+   git clone https://github.com/yourusername/burgercreativity.git
+   cd burgercreativity
    ```
 
-2. **Install dependencies**
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. **Set up the database**
-   - Make sure PostgreSQL is running
-   - The application uses environment variables for database connection:
-     - `DATABASE_URL`: PostgreSQL connection URL
-     - `PGHOST`: Database host
-     - `PGPORT`: Database port
-     - `PGUSER`: Database username
-     - `PGPASSWORD`: Database password
-     - `PGDATABASE`: Database name
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+   Then edit `.env` with your database credentials and other configurations.
 
-4. **Start the application**
+4. Set up the database:
+   ```bash
+   npm run db:push
+   ```
+
+5. Start the development server:
    ```bash
    npm run dev
    ```
-   This command starts both the backend Express server and the frontend Vite development server.
 
-5. **Access the application**
-   - Open your browser and navigate to: `http://localhost:5000`
-   - The application will automatically create default ingredients in the database if none exist
+6. Open your browser and navigate to `http://localhost:5000`
 
-### Project Structure
+## 📊 Database Schema
 
-- **Frontend**: React with TypeScript, styled with Tailwind CSS and shadcn UI components
-  - Located in the `client` directory
-  - Uses React Context API for state management
-  - TanStack Query for data fetching
+The application uses the following main data models:
 
-- **Backend**: Express.js API server
-  - Located in the `server` directory
-  - Provides API endpoints for ingredients and saved burgers
-  - Uses Drizzle ORM for database interactions
+- **Ingredients**: Categorized by type (bun, patty, cheese, veggie, sauce)
+- **Burgers**: Customized burger creations with selected ingredients
 
-- **Database**: PostgreSQL
-  - Schema and models defined in `shared/schema.ts`
-  - Migrations handled by Drizzle ORM
+## 💻 API Endpoints
 
-## Usage Flow
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/ingredients` | GET | Fetch all available ingredients |
+| `/api/ingredients/type/:type` | GET | Fetch ingredients by type |
+| `/api/burgers` | GET | Fetch all saved burgers |
+| `/api/burgers` | POST | Save a new burger creation |
+| `/api/burgers/:id` | GET | Fetch a specific burger by ID |
 
-1. **Welcome Page**
-   - Click the "Welcome to BurgerFy" button to start building your burger
+## 🧪 Testing
 
-2. **Builder Page**
-   - Select ingredients from the categories panel on the left
-   - See your burger being built in real-time in the center preview
-   - Click "Finish My Burger" when you're ready to proceed
+Run the test suite with:
 
-3. **Final Page**
-   - Name your burger creation
-   - Save your burger to the database
-   - Option to start over and create a new burger
+```bash
+npm test
+```
 
-## Troubleshooting
+## 📝 License
 
-- If you encounter database connectivity issues, check that your PostgreSQL server is running and that the connection details in your environment variables are correct.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- If the application doesn't start, check the console logs for detailed error messages.
+## 🤝 Contributing
 
-- For development issues, consider checking the React browser extension for component debugging.
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📞 Contact
+
+Project Link: [https://github.com/yourusername/burgercreativity](https://github.com/yourusername/burgercreativity)
+
+---
+
+Made with ❤️ by the BurgerCreativity Team

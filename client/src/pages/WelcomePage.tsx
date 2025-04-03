@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 const WelcomePage: React.FC = () => {
   const [_, setLocation] = useLocation();
+  const { user } = useAuth();
+  
+  // Automatically redirect to build page when mounted
+  useEffect(() => {
+    // We can add a short delay to show the welcome screen briefly
+    const timer = setTimeout(() => {
+      setLocation('/build');
+    }, 1500); // 1.5 seconds delay
+    
+    return () => clearTimeout(timer);
+  }, [setLocation]);
   
   const handleGetStarted = () => {
     setLocation('/build');
@@ -27,14 +39,20 @@ const WelcomePage: React.FC = () => {
         </div>
         
         <h1 className="font-heading text-4xl font-bold text-primary mb-4">BurgerFy</h1>
-        <p className="text-lg mb-8 text-gray-600">Create your dream burger in just a few clicks!</p>
+        <p className="text-lg mb-6 text-gray-600">Create your dream burger in just a few clicks!</p>
+        
+        {user && (
+          <p className="text-md mb-4 text-gray-700 font-medium">
+            Welcome back, {user.fullName}! Redirecting to burger builder...
+          </p>
+        )}
         
         <Button 
           onClick={handleGetStarted}
-          className="bg-primary hover:bg-opacity-90 text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+          className="bg-primary hover:bg-opacity-90 text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 animate-pulse"
           size="lg"
         >
-          Welcome to BurgerFy
+          Create Your Burger Now
         </Button>
       </div>
     </div>

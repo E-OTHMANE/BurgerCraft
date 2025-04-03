@@ -132,14 +132,16 @@ export class PgStorage implements IStorage {
             displayName: "Classic Bun",
             type: "bun",
             color: "bg-bun",
-            height: 12
+            height: 12,
+            price: "1.50"
           },
           {
             name: "sesame-bun",
             displayName: "Sesame Bun",
             type: "bun",
             color: "bg-bun",
-            height: 12
+            height: 12,
+            price: "1.75"
           },
           // Patties
           {
@@ -147,14 +149,16 @@ export class PgStorage implements IStorage {
             displayName: "Beef Patty",
             type: "patty",
             color: "bg-meat",
-            height: 8
+            height: 8,
+            price: "3.50"
           },
           {
             name: "veggie-patty",
             displayName: "Veggie Patty",
             type: "patty",
             color: "bg-lettuce",
-            height: 8
+            height: 8,
+            price: "3.00"
           },
           // Cheese
           {
@@ -162,14 +166,16 @@ export class PgStorage implements IStorage {
             displayName: "Cheddar",
             type: "cheese",
             color: "bg-cheese",
-            height: 4
+            height: 4,
+            price: "1.00"
           },
           {
             name: "swiss",
             displayName: "Swiss",
             type: "cheese",
             color: "bg-yellow-100",
-            height: 4
+            height: 4,
+            price: "1.25"
           },
           // Veggies
           {
@@ -177,28 +183,32 @@ export class PgStorage implements IStorage {
             displayName: "Lettuce",
             type: "veggie",
             color: "bg-lettuce",
-            height: 4
+            height: 4,
+            price: "0.50"
           },
           {
             name: "tomato",
             displayName: "Tomato",
             type: "veggie",
             color: "bg-tomato",
-            height: 4
+            height: 4,
+            price: "0.75"
           },
           {
             name: "onion",
             displayName: "Onion",
             type: "veggie",
             color: "bg-onion",
-            height: 4
+            height: 4,
+            price: "0.50"
           },
           {
             name: "pickle",
             displayName: "Pickle",
             type: "veggie",
             color: "bg-green-300",
-            height: 4
+            height: 4,
+            price: "0.50"
           },
           // Sauces
           {
@@ -206,28 +216,32 @@ export class PgStorage implements IStorage {
             displayName: "Ketchup",
             type: "sauce",
             color: "bg-red-500",
-            height: 2
+            height: 2,
+            price: "0.25"
           },
           {
             name: "mayo",
             displayName: "Mayo",
             type: "sauce",
             color: "bg-gray-100",
-            height: 2
+            height: 2,
+            price: "0.25"
           },
           {
             name: "mustard",
             displayName: "Mustard",
             type: "sauce",
             color: "bg-yellow-400",
-            height: 2
+            height: 2,
+            price: "0.25"
           },
           {
             name: "special-sauce",
             displayName: "Special Sauce",
             type: "sauce",
             color: "bg-orange-300",
-            height: 2
+            height: 2,
+            price: "0.75"
           }
         ];
         

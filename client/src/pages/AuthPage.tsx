@@ -24,10 +24,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const registerSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
-  username: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   age: z.number().optional(),
-});
+}).transform(data => ({
+  ...data,
+  username: data.email // Ensure username matches email
+}));
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 

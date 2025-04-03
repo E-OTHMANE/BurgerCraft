@@ -1,3 +1,4 @@
+
 import { createContext, ReactNode, useContext } from "react";
 import { useAuth as useAuthHook, User, LoginCredentials, RegisterCredentials } from "@/hooks/useAuth";
 import { UseMutationResult } from "@tanstack/react-query";
@@ -12,19 +13,12 @@ interface AuthContextType {
   logoutMutation: UseMutationResult<void, Error, void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = useAuthHook();
-  
-  // Create a value that matches the AuthContextType
-  const contextValue: AuthContextType = {
-    ...auth,
-    user: auth.user ?? null // Convert undefined to null
-  };
-  
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={auth}>
       {children}
     </AuthContext.Provider>
   );

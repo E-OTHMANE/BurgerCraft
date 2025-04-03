@@ -1,4 +1,5 @@
 import { burgers, ingredients, type Burger, type InsertBurger, type Ingredient, type InsertIngredient } from "@shared/schema";
+import { log } from './vite';
 
 export interface IStorage {
   // Ingredient operations
@@ -188,4 +189,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Create the storage instance
+// This will be replaced with PostgreSQL implementation in index.ts
+export const storage: IStorage = new MemStorage();

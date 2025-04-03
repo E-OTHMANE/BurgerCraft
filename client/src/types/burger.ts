@@ -8,6 +8,7 @@ export interface IngredientItem {
   type: IngredientType;
   color: string;
   height: number;
+  price: number | string;
 }
 
 // Selected ingredient with unique selection ID

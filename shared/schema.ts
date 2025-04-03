@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, jsonb, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, jsonb, timestamp, uniqueIndex, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -44,13 +44,28 @@ export const ingredients = pgTable("ingredients", {
   type: text("type").notNull(),
   color: text("color").notNull(),
   height: integer("height").notNull(),
+  price: decimal("price", { precision: 6, scale: 2 }).default("1.00").notNull(),
 });
 
-export const insertIngredientSchema = createInsertSchema(ingredients).omit({ 
+// Create the base schema 
+const baseIngredientSchema = createInsertSchema(ingredients).omit({ 
   id: true 
 });
 
-export type Ingredient = typeof ingredients.$inferSelect;
+// Extend the base schema to support both string and number price types
+export const insertIngredientSchema = baseIngredientSchema.extend({
+  price: z.union([z.string(), z.number()]).transform(val => 
+    typeof val === 'number' ? val.toString() : val
+  )
+});
+
+// Original type from database
+type OriginalIngredient = typeof ingredients.$inferSelect;
+
+// Extended type with string or number price
+export type Ingredient = Omit<OriginalIngredient, 'price'> & {
+  price: string | number;
+};
 export type InsertIngredient = z.infer<typeof insertIngredientSchema>;
 
 // Define the burgers table with user relationship

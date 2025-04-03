@@ -49,7 +49,8 @@ export class MemStorage implements IStorage {
       displayName: "Classic Bun",
       type: "bun",
       color: "bg-bun",
-      height: 12
+      height: 12,
+      price: "0.50"
     });
     
     this.createIngredient({
@@ -57,7 +58,8 @@ export class MemStorage implements IStorage {
       displayName: "Sesame Bun",
       type: "bun",
       color: "bg-bun",
-      height: 12
+      height: 12,
+      price: 0.75
     });
     
     // Patties
@@ -66,7 +68,8 @@ export class MemStorage implements IStorage {
       displayName: "Beef Patty",
       type: "patty",
       color: "bg-meat",
-      height: 8
+      height: 8,
+      price: 2.5
     });
     
     this.createIngredient({
@@ -74,7 +77,8 @@ export class MemStorage implements IStorage {
       displayName: "Veggie Patty",
       type: "patty",
       color: "bg-lettuce",
-      height: 8
+      height: 8,
+      price: 2.0
     });
     
     // Cheese
@@ -83,7 +87,8 @@ export class MemStorage implements IStorage {
       displayName: "Cheddar",
       type: "cheese",
       color: "bg-cheese",
-      height: 4
+      height: 4,
+      price: 0.75
     });
     
     this.createIngredient({
@@ -91,7 +96,8 @@ export class MemStorage implements IStorage {
       displayName: "Swiss",
       type: "cheese",
       color: "bg-yellow-100",
-      height: 4
+      height: 4,
+      price: 1.0
     });
     
     // Veggies
@@ -100,7 +106,8 @@ export class MemStorage implements IStorage {
       displayName: "Lettuce",
       type: "veggie",
       color: "bg-lettuce",
-      height: 4
+      height: 4,
+      price: 0.25
     });
     
     this.createIngredient({
@@ -108,7 +115,8 @@ export class MemStorage implements IStorage {
       displayName: "Tomato",
       type: "veggie",
       color: "bg-tomato",
-      height: 4
+      height: 4,
+      price: 0.5
     });
     
     this.createIngredient({
@@ -116,7 +124,8 @@ export class MemStorage implements IStorage {
       displayName: "Onion",
       type: "veggie",
       color: "bg-onion",
-      height: 4
+      height: 4,
+      price: 0.25
     });
     
     this.createIngredient({
@@ -124,7 +133,8 @@ export class MemStorage implements IStorage {
       displayName: "Pickle",
       type: "veggie",
       color: "bg-green-300",
-      height: 4
+      height: 4,
+      price: 0.35
     });
     
     // Sauces
@@ -133,7 +143,8 @@ export class MemStorage implements IStorage {
       displayName: "Ketchup",
       type: "sauce",
       color: "bg-red-500",
-      height: 2
+      height: 2,
+      price: 0.15
     });
     
     this.createIngredient({
@@ -141,7 +152,8 @@ export class MemStorage implements IStorage {
       displayName: "Mayo",
       type: "sauce",
       color: "bg-gray-100",
-      height: 2
+      height: 2,
+      price: 0.15
     });
     
     this.createIngredient({
@@ -149,7 +161,8 @@ export class MemStorage implements IStorage {
       displayName: "Mustard",
       type: "sauce",
       color: "bg-yellow-400",
-      height: 2
+      height: 2,
+      price: 0.15
     });
     
     this.createIngredient({
@@ -157,7 +170,8 @@ export class MemStorage implements IStorage {
       displayName: "Special Sauce",
       type: "sauce",
       color: "bg-orange-300",
-      height: 2
+      height: 2,
+      price: 0.5
     });
   }
 

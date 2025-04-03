@@ -6,7 +6,7 @@ import IngredientCategory from '@/components/IngredientCategory';
 import BurgerPreview from '@/components/BurgerPreview';
 import { useIngredients } from '@/hooks/useBurger';
 import { useBurgerContext } from '@/context/BurgerContext';
-import { countIngredients, groupIngredientsByType, formatCategoryName } from '@/lib/utils';
+import { countIngredients, groupIngredientsByType, formatCategoryName, calculateBurgerPrice, formatPrice } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { IngredientItem, SelectedIngredient, BurgerData } from '@/types/burger';
 
@@ -149,11 +149,22 @@ const BuilderPage: React.FC = () => {
                 ingredientCounts.map((item) => (
                   <li key={item.ingredient.id} className="flex justify-between items-center">
                     <span>{item.ingredient.displayName}</span>
-                    <span className="text-gray-600">{item.count > 1 ? `x${item.count}` : ''}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-600">{formatPrice(item.ingredient.price)}</span>
+                      <span className="text-gray-600">{item.count > 1 ? `x${item.count}` : ''}</span>
+                    </div>
                   </li>
                 ))
               )}
             </ul>
+            
+            {/* Total Price */}
+            {ingredientCounts.length > 0 && (
+              <div className="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center">
+                <span className="font-semibold">Total:</span>
+                <span className="font-bold text-primary">{formatPrice(calculateBurgerPrice(burger))}</span>
+              </div>
+            )}
           </div>
         </div>
 

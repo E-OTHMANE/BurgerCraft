@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import BurgerPreview from '@/components/BurgerPreview';
 import { useBurgerContext } from '@/context/BurgerContext';
 import { useSaveBurger } from '@/hooks/useBurger';
-import { countIngredients } from '@/lib/utils';
+import { countIngredients, calculateBurgerPrice, formatPrice } from '@/lib/utils';
 
 const FinalPage: React.FC = () => {
   const [_, setLocation] = useLocation();
@@ -89,12 +89,26 @@ const FinalPage: React.FC = () => {
           {/* Ingredients List */}
           <div className="mb-6">
             <h3 className="font-heading text-lg font-bold mb-2">Ingredients:</h3>
-            <ul className="list-disc pl-5 space-y-1">
+            <ul className="space-y-2">
               {ingredientCounts.map((item) => (
-                <li key={item.ingredient.id}>
-                  {item.ingredient.displayName} {item.count > 1 ? `(x${item.count})` : ''}
+                <li key={item.ingredient.id} className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <span>{item.ingredient.displayName}</span>
+                    <span className="text-gray-600 ml-2">{item.count > 1 ? `(x${item.count})` : ''}</span>
+                  </div>
+                  <span className="font-medium">
+                    {formatPrice(typeof item.ingredient.price === 'string' ? parseFloat(item.ingredient.price) * item.count : item.ingredient.price * item.count)}
+                  </span>
                 </li>
               ))}
+              
+              {/* Total price display */}
+              <li className="pt-2 mt-2 border-t border-gray-200 flex justify-between items-center">
+                <span className="font-bold">Total Price:</span>
+                <span className="font-bold text-primary text-lg">
+                  {formatPrice(calculateBurgerPrice(burger))}
+                </span>
+              </li>
             </ul>
           </div>
           

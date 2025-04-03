@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --foreground: 222 47% 11%;
+    
+    --primary: 17 100% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --border: 0 0% 89%;
+    --input: 214 32% 91%;
+    --ring: 222 47% 11%;
+
+    --secondary: 23 89% 80%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --radius: 0.5rem;
+
+    /* BurgerFy specific colors */
+    --bun: 46 100% 64%;
+    --meat: 15 46% 33%;
+    --lettuce: 166 45% 45%;
+    --tomato: 3 100% 61%;
+    --cheese: 52 100% 50%;
+    --onion: 260 60% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-heading {
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .font-body {
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .bg-bun {
+    @apply bg-[#FFD275];
+  }
+
+  .bg-meat {
+    @apply bg-[#7A3B2E];
+  }
+
+  .bg-lettuce {
+    @apply bg-[#43AA8B];
+  }
+
+  .bg-tomato {
+    @apply bg-[#FF4136];
+  }
+
+  .bg-cheese {
+    @apply bg-[#FFDC00];
+  }
+
+  .bg-onion {
+    @apply bg-[#9370DB];
+  }
+
+  .burger-part {
+    transition: all 0.3s ease;
+  }
+  
+  .ingredient-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .burger-wrapper {
+    perspective: 1000px;
+  }
+}

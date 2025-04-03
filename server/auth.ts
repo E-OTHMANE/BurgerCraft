@@ -137,8 +137,15 @@ export function setupAuth(app: Express) {
   // User registration
   app.post("/api/register", async (req, res, next) => {
     try {
+      // We need to extract username and add it to the data for validation
+      const { username, ...otherData } = req.body;
+      
       // Validate request body against schema
-      const validatedData = insertUserSchema.parse(req.body);
+      const validatedData = insertUserSchema.parse({
+        ...otherData,
+        // If email isn't provided but username is, use username as email
+        email: otherData.email || username
+      });
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);

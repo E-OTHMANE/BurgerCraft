@@ -12,12 +12,15 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;  // This needs to be "username" to match Passport's expectations
   password: string;
 }
 
-export interface RegisterCredentials extends LoginCredentials {
+export interface RegisterCredentials {
+  username: string;  // This is actually the email
+  password: string;
   fullName: string;
+  email: string;     // Include both email and username fields
   age?: number;
 }
 

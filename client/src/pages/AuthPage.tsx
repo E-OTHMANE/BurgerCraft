@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react";
 
 // Login form schema
 const loginSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  username: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
@@ -24,6 +24,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const registerSchema = z.object({
   fullName: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
+  username: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   age: z.number().optional(),
 });
@@ -46,7 +47,7 @@ export default function AuthPage() {
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -57,6 +58,7 @@ export default function AuthPage() {
     defaultValues: {
       fullName: "",
       email: "",
+      username: "",
       password: "",
       age: undefined,
     },
@@ -64,7 +66,10 @@ export default function AuthPage() {
 
   // Handle login form submission
   const onLoginSubmit = (data: LoginFormValues) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate({
+      username: data.username,
+      password: data.password
+    });
   };
 
   // Handle register form submission
@@ -108,7 +113,7 @@ export default function AuthPage() {
                     <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                       <FormField
                         control={loginForm.control}
-                        name="email"
+                        name="username"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Email</FormLabel>
@@ -194,12 +199,22 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input placeholder="email@example.com" {...field} />
+                              <Input 
+                                placeholder="email@example.com" 
+                                {...field} 
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  // Update username field to match email
+                                  registerForm.setValue("username", e.target.value);
+                                }}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+                      {/* Hidden username field that copies the email value */}
+                      <input type="hidden" {...registerForm.register("username")} />
                       <FormField
                         control={registerForm.control}
                         name="password"

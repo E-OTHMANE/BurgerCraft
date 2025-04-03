@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -8,10 +8,45 @@ import { useIngredients } from '@/hooks/useBurger';
 import { useBurgerContext } from '@/context/BurgerContext';
 import { countIngredients, groupIngredientsByType, formatCategoryName } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { IngredientItem, SelectedIngredient, BurgerData } from '@/types/burger';
+
+// Fallback state when context isn't available
+const fallbackState = {
+  burger: {
+    name: '',
+    ingredients: [] as SelectedIngredient[],
+  },
+  ingredients: [] as IngredientItem[],
+  isLoading: true,
+  error: null,
+};
 
 const BuilderPage: React.FC = () => {
   const [_, setLocation] = useLocation();
-  const { state, resetBurger } = useBurgerContext();
+  
+  // Try to use context, and if it fails, use local state
+  let contextState: {
+    state: {
+      burger: BurgerData;
+      ingredients: IngredientItem[];
+      isLoading: boolean;
+      error: string | null;
+    };
+    resetBurger: () => void;
+  };
+  
+  try {
+    contextState = useBurgerContext();
+  } catch (error) {
+    console.error('Context error:', error);
+    // Fallback to simple local state if context isn't available
+    contextState = {
+      state: fallbackState,
+      resetBurger: () => console.log('Reset burger (fallback)'),
+    };
+  }
+  
+  const { state, resetBurger } = contextState;
   const { isLoading, error } = useIngredients();
   
   const { ingredients, burger } = state;

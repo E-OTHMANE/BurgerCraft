@@ -5,28 +5,61 @@ import { IngredientItem, IngredientType, BurgerData } from '@/types/burger';
 import { useBurgerContext } from '@/context/BurgerContext';
 import { useToast } from '@/hooks/use-toast';
 
-export function useIngredients() {
-  const { setIngredients } = useBurgerContext();
-  const { toast } = useToast();
+// Fallback setter function for when context isn't available
+const noopSetIngredients = (ingredients: IngredientItem[]) => {
+  console.log('Setting ingredients (fallback):', ingredients);
+};
 
-  return useQuery({
+export function useIngredients() {
+  const { toast } = useToast();
+  
+  // Try to get setIngredients from context, use fallback if context isn't available
+  let setIngredients: (ingredients: IngredientItem[]) => void;
+  
+  try {
+    const context = useBurgerContext();
+    setIngredients = context.setIngredients;
+  } catch (error) {
+    console.error('Context error in useIngredients:', error);
+    setIngredients = noopSetIngredients;
+  }
+
+  return useQuery<IngredientItem[]>({
     queryKey: ['/api/ingredients'],
-    onSuccess: (data: IngredientItem[]) => {
-      setIngredients(data);
+    meta: {
+      // Custom handlers outside of the standard QueryFunctionContext
+      callbacks: {
+        onQuerySuccess: (data: IngredientItem[]) => {
+          setIngredients(data);
+        }
+      }
     },
-    onError: (error) => {
-      toast({
-        title: 'Error',
-        description: 'Failed to load ingredients. Please try again.',
-        variant: 'destructive',
-      });
-      console.error('Failed to fetch ingredients:', error);
-    },
+    // Using an inline query function to handle success inside
+    queryFn: async ({ queryKey }): Promise<IngredientItem[]> => {
+      try {
+        const response = await fetch(queryKey[0] as string);
+        if (!response.ok) {
+          throw new Error('Failed to fetch ingredients');
+        }
+        const data = await response.json();
+        // Call the setIngredients function here, since we have direct access
+        setIngredients(data);
+        return data;
+      } catch (err) {
+        toast({
+          title: 'Error',
+          description: 'Failed to load ingredients. Please try again.',
+          variant: 'destructive',
+        });
+        console.error('Failed to fetch ingredients:', err);
+        throw err;
+      }
+    }
   });
 }
 
 export function useIngredientsByType(type: IngredientType) {
-  return useQuery({
+  return useQuery<IngredientItem[]>({
     queryKey: ['/api/ingredients/type', type],
   });
 }
@@ -58,7 +91,7 @@ export function useSaveBurger() {
       // Invalidate burgers query cache
       queryClient.invalidateQueries({ queryKey: ['/api/burgers'] });
     },
-    onError: (error) => {
+    onError: (error: unknown) => {
       toast({
         title: 'Error',
         description: 'Failed to save your burger. Please try again.',
